@@ -10,6 +10,7 @@ public class CarMovement : MonoBehaviour
     
     [Header("MoveSides")]
     [SerializeField] [Range(0.001f, 0.1f)] float sideSpeed;
+    [SerializeField] float clampValue = 6f;
 
     Vector2 firstPosition;
     Vector2 currentPosition;
@@ -28,8 +29,10 @@ public class CarMovement : MonoBehaviour
         
         if (Input.touchCount > 0)
         {
-            transform.position = new Vector3(transform.position.x + deltaPositionX * sideSpeed * Time.deltaTime,
-                transform.position.y, transform.position.z);
+            transform.position =
+                new Vector3(
+                    Mathf.Clamp(transform.position.x + deltaPositionX * sideSpeed * Time.deltaTime, -clampValue,
+                        clampValue), transform.position.y, transform.position.z);
         }
     }
 
