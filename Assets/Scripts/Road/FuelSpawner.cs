@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -9,15 +8,22 @@ public class FuelSpawner : MonoBehaviour
     [SerializeField] GameObject fuelPrefab;
     
     int slotNumber;
-    int minNum = 0;
-    int maxNum = 5;
+    int minNum;
+    int maxNum;
     
     float spawnDelay = 0.15f;
     
     void OnEnable()
     {
+        GetMinMaxValues();
         CreateFuels();
         Invoke(nameof(FuelSpawn), spawnDelay);
+    }
+
+    void GetMinMaxValues()
+    {
+        minNum = DifficultyController.Instance.minFuel;
+        maxNum = DifficultyController.Instance.maxFuel;
     }
 
     void FuelSpawn()

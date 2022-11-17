@@ -8,15 +8,22 @@ public class ObstacleSpawner : MonoBehaviour
     [SerializeField] GameObject[] obstacles;
 
     int slotNumber;
-    int minNum = 0;
-    int maxNum = 30;
+    int minNum;
+    int maxNum;
     
     float spawnDelay = 0.15f;
 
     void OnEnable()
     {
+        GetMinMaxValues();
         CreateObstacles();
         Invoke(nameof(BlockSpawner), spawnDelay);
+    }
+
+    void GetMinMaxValues()
+    {
+        minNum = DifficultyController.Instance.minObstacle;
+        maxNum = DifficultyController.Instance.maxObstacle;
     }
 
     void BlockSpawner()
@@ -66,7 +73,6 @@ public class ObstacleSpawner : MonoBehaviour
         {
             for (int i = 0; i < obstacles.Length; i++)
                 obstacles[i].SetActive(false);
-            
         }
     }
 }

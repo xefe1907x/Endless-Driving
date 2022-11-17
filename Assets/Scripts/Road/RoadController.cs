@@ -1,11 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RoadController : MonoBehaviour
 {
-    int hitCount = 0;
-
     int moveThreshold = 1280;
 
     [SerializeField] List<GameObject> roads = new List<GameObject>();

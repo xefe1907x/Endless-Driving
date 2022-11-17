@@ -10,7 +10,7 @@ public class CarController : MonoBehaviour
     void Awake()
     {
         if (Instance != null)
-            Destroy(Instance);
+            Destroy(this);
 
         Instance = this;
     }
