@@ -15,7 +15,6 @@ public class Highscore : MonoBehaviour
     void FixedUpdate()
     {
         HighscoreController();
-        Debug.Log(PlayerPrefs.GetFloat(highScoreKey));
     }
 
     void HighscoreController()
