@@ -5,7 +5,8 @@ public class CarMovement : MonoBehaviour
 {
     [Header("MoveForward")]
     [SerializeField] float carSpeed = 10f;
-    [SerializeField] float carAcceleration = 0.2f;
+    [SerializeField] float maxSpeed = 50f;
+    [SerializeField] float carAcceleration = 10f;
     [Space(5)]
     
     [Header("MoveSides")]
@@ -60,7 +61,8 @@ public class CarMovement : MonoBehaviour
 
     void IncreaseSpeedRegularly()
     {
-        carSpeed += carAcceleration * Time.deltaTime;
+        if (carSpeed <= maxSpeed)
+            carSpeed += carAcceleration * Time.deltaTime;
     }
 
     void MoveForward()
