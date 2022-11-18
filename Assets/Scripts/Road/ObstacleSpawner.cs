@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -11,13 +12,21 @@ public class ObstacleSpawner : MonoBehaviour
     int minNum;
     int maxNum;
     
-    float spawnDelay = 0.15f;
+    float spawnDelay = 0.25f;
+
+    void Awake()
+    {
+        GetMinMaxValues();
+    }
 
     void OnEnable()
     {
-        GetMinMaxValues();
-        CreateObstacles();
         Invoke(nameof(BlockSpawner), spawnDelay);
+    }
+
+    void Start()
+    {
+        CreateObstacles();
     }
 
     void GetMinMaxValues()

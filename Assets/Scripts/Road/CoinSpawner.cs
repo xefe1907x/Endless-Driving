@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CoinSpawner : MonoBehaviour
 {
@@ -14,8 +16,12 @@ public class CoinSpawner : MonoBehaviour
     
     void OnEnable()
     {
-        CreateCoins();
         Invoke(nameof(CoinSpawn), spawnDelay);
+    }
+
+    void Start()
+    {
+        CreateCoins();
     }
 
     void CreateCoins()

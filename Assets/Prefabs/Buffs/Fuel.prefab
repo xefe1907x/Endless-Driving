@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1500085590120173935}
   - component: {fileID: 4699480872054089409}
   - component: {fileID: 6464556227972109587}
+  - component: {fileID: -2147860040945552715}
   m_Layer: 0
   m_Name: Fuel
   m_TagString: Untagged
@@ -98,3 +99,15 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -384824820402883211, guid: f36175b40f4b9844ea403611edc07a38, type: 3}
+--- !u!114 &-2147860040945552715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2263913099079508281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0108773a8ca2494cbea3329c36897ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

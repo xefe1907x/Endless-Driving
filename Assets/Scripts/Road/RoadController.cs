@@ -10,9 +10,12 @@ public class RoadController : MonoBehaviour
 
     void Start()
     {
-        CarController.Instance.hitEndDetector += MoveRoadForward;
+        SubscribeMoveRoadForward();
         SetupQueue();
     }
+    
+    void SubscribeMoveRoadForward() => CarController.Instance.hitEndDetector += MoveRoadForward;
+    void UnsubscribeMoveRoadForward() => CarController.Instance.hitEndDetector -= MoveRoadForward;
 
     void SetupQueue()
     {
@@ -35,6 +38,6 @@ public class RoadController : MonoBehaviour
 
     void OnDisable()
     {
-        CarController.Instance.hitEndDetector -= MoveRoadForward;
+        UnsubscribeMoveRoadForward();
     }
 }

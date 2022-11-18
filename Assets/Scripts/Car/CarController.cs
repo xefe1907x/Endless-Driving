@@ -18,9 +18,19 @@ public class CarController : MonoBehaviour
     #endregion
 
     public event Action hitEndDetector;
+    public event Action fullFuel;
+    
+    public event Action coinCollected;
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("EndDetector"))
             hitEndDetector?.Invoke();
+        
+        if (other.GetComponent<Fuel>())
+            fullFuel?.Invoke();
+        
+        if (other.GetComponent<Coin>())
+            coinCollected?.Invoke();
+            
     }
 }
