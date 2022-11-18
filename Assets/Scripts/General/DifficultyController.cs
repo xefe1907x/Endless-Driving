@@ -1,10 +1,10 @@
-using System;
 using UnityEngine;
 
+[DefaultExecutionOrder(-500)]
 public class DifficultyController : MonoBehaviour
 {
     public int minFuel = 0;
-    public int maxFuel = 5;
+    public int maxFuel = 2;
     int fuelIncreaseValue = 2;
     public int minObstacle = 0;
     public int maxObstacle = 30;

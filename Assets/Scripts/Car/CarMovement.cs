@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using UnityEngine;
 using TouchPhase = UnityEngine.TouchPhase;
 
@@ -16,6 +18,33 @@ public class CarMovement : MonoBehaviour
     Vector2 firstPosition;
     Vector2 currentPosition;
 
+    float deltaPositionX;
+
+    bool outOfFuel;
+
+    #region Singleton
+
+    public static CarMovement Instance;
+
+    void Awake()
+    {
+        if (Instance != null)
+            Destroy(this);
+
+        Instance = this;
+    }
+
+    #endregion
+
+    public event Action<float> xPosition;
+    public event Action touchCanceled;
+    public event Action<float> carSpeedAction;
+
+    void Start()
+    {
+        UIController.Instance.outOfFuel += StopCar;
+    }
+
     void Update()
     {
         MoveForward();
@@ -26,14 +55,14 @@ public class CarMovement : MonoBehaviour
 
     void MoveSides()
     {
-        var deltaPositionX = currentPosition.x - firstPosition.x;
-        
         if (Input.touchCount > 0)
         {
             transform.position =
                 new Vector3(
                     Mathf.Clamp(transform.position.x + deltaPositionX * sideSpeed * Time.deltaTime, -clampValue,
                         clampValue), transform.position.y, transform.position.z);
+            
+            xPosition?.Invoke(deltaPositionX);
         }
     }
 
@@ -49,12 +78,15 @@ public class CarMovement : MonoBehaviour
             if (Input.GetTouch(0).phase == TouchPhase.Moved)
             {
                 currentPosition = Input.GetTouch(0).position;
+                
+                deltaPositionX = currentPosition.x - firstPosition.x;
             }
 
-            if (Input.GetTouch(0).phase == TouchPhase.Canceled)
+            if (Input.GetTouch(0).phase == TouchPhase.Ended)
             {
-                firstPosition = Vector2.zero;
-                currentPosition = Vector2.zero;
+                deltaPositionX = 0;
+                
+                touchCanceled?.Invoke();
             }
         }
     }
@@ -68,5 +100,35 @@ public class CarMovement : MonoBehaviour
     void MoveForward()
     {
         transform.Translate(Vector3.forward * carSpeed * Time.deltaTime);
+        
+        carSpeedAction?.Invoke(carSpeed);
+    }
+
+    void StopCar()
+    {
+        StartCoroutine(nameof(CarSlowDown));
+        sideSpeed = 0;
+        maxSpeed = -1;
+        carAcceleration = 0;
+    }
+
+    IEnumerator CarSlowDown()
+    {
+        if (carSpeed > 0)
+        {
+            carSpeed -= 0.03f;
+
+            yield return new WaitForSeconds(0.5f);
+
+            StartCoroutine(nameof(CarSlowDown));
+        }
+        
+        if (carSpeed < 0)
+            carSpeed = 0;
+    }
+
+    void OnDisable()
+    {
+        UIController.Instance.outOfFuel -= StopCar;
     }
 }

@@ -16,8 +16,12 @@ public class FuelSpawner : MonoBehaviour
     void OnEnable()
     {
         GetMinMaxValues();
-        CreateFuels();
         Invoke(nameof(FuelSpawn), spawnDelay);
+    }
+
+    void Start()
+    {
+        CreateFuels();
     }
 
     void GetMinMaxValues()

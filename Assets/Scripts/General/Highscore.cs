@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -12,6 +13,11 @@ public class Highscore : MonoBehaviour
     
     string highScoreKey = "highScore";
 
+    void Start()
+    {
+        UIController.Instance.outOfFuel += StopIncreasingHighscore;
+    }
+
     void FixedUpdate()
     {
         HighscoreController();
@@ -23,7 +29,15 @@ public class Highscore : MonoBehaviour
 
         highScoreText.text = Mathf.FloorToInt(score).ToString();
     }
-    
+
+    void StopIncreasingHighscore() => highscoreMultiplier = 0;
+
+
+    void OnDisable()
+    {
+        UIController.Instance.outOfFuel -= StopIncreasingHighscore;
+    }
+
     void OnDestroy()
     {
         currentHighscore = PlayerPrefs.GetFloat(highScoreKey);
