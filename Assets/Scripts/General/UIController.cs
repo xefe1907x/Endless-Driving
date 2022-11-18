@@ -1,5 +1,6 @@
 using System;
 using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using Image = UnityEngine.UI.Image;
 
@@ -9,6 +10,7 @@ public class UIController : MonoBehaviour
     [SerializeField] GameObject steeringWheel;
     [SerializeField] Image fuelFull;
     [SerializeField] GameObject speedBar;
+    [SerializeField] TextMeshProUGUI coin;
     [Space(10)]
 
     [Header("Values")]
@@ -32,14 +34,25 @@ public class UIController : MonoBehaviour
 
     public event Action outOfFuel;
 
-    void Start()
+    void OnEnable()
+    {
+        SubscribeActions();
+        DOTween.Init();
+    }
+
+    void SubscribeActions()
     {
         CarMovement.Instance.xPosition += MoveSteeringWheel;
         CarMovement.Instance.touchCanceled += StopMovingSteer;
         CarMovement.Instance.carSpeedAction += DecreaseFuel;
         CarMovement.Instance.carSpeedAction += ManageSpeedBar;
         CarController.Instance.fullFuel += FullFuel;
-        DOTween.Init();
+        WalletController.Instance.changeCoinAmount += ChangeWalletAmount;
+    }
+
+    void ChangeWalletAmount(int coinAmount)
+    {
+        coin.text = coinAmount.ToString();
     }
 
     void MoveSteeringWheel(float value)
@@ -72,14 +85,20 @@ public class UIController : MonoBehaviour
     }
 
     void FullFuel() => fuelFull.fillAmount = 1;
-    
 
-    void OnDisable()
+    void UnsubscribeActions()
     {
         CarMovement.Instance.xPosition -= MoveSteeringWheel;
         CarMovement.Instance.touchCanceled -= StopMovingSteer;
         CarMovement.Instance.carSpeedAction -= DecreaseFuel;
         CarMovement.Instance.carSpeedAction -= ManageSpeedBar;
         CarController.Instance.fullFuel -= FullFuel;
+        WalletController.Instance.changeCoinAmount += ChangeWalletAmount;
+    }
+    
+
+    void OnDisable()
+    {
+        UnsubscribeActions();
     }
 }

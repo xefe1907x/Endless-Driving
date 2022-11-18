@@ -25,8 +25,11 @@ public class DifficultyController : MonoBehaviour
     #endregion
     void Start()
     {
-        CarController.Instance.hitEndDetector += IncreaseDifficulty;
+        SubscribeHitEndDetector();
     }
+    
+    void SubscribeHitEndDetector() => CarController.Instance.hitEndDetector += IncreaseDifficulty;
+    void UnsubscribeHitEndDetector() => CarController.Instance.hitEndDetector -= IncreaseDifficulty;
 
     void IncreaseDifficulty()
     {
@@ -45,6 +48,6 @@ public class DifficultyController : MonoBehaviour
 
     void OnDisable()
     {
-        CarController.Instance.hitEndDetector -= IncreaseDifficulty;
+        UnsubscribeHitEndDetector();
     }
 }

@@ -1,4 +1,4 @@
-using System;
+using System.IO;
 using TMPro;
 using UnityEngine;
 
@@ -6,22 +6,26 @@ public class Highscore : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI highScoreText;
 
+    float highScore;
     float score;
-    float currentHighscore;
 
     int highscoreMultiplier = 5;
-    
-    string highScoreKey = "highScore";
+
+    string saveDataPath = "/Data/GameDataFile.json";
 
     void Start()
     {
-        UIController.Instance.outOfFuel += StopIncreasingHighscore;
+        SubscribeOutOfFuel();
+        LoadFromJson();
     }
-
     void FixedUpdate()
     {
         HighscoreController();
     }
+    
+    void SubscribeOutOfFuel() => UIController.Instance.outOfFuel += StopIncreasingHighscore;
+    void UnsubscribeOutOfFuel() => UIController.Instance.outOfFuel -= StopIncreasingHighscore;
+    void StopIncreasingHighscore() => highscoreMultiplier = 0;
 
     void HighscoreController()
     {
@@ -30,19 +34,32 @@ public class Highscore : MonoBehaviour
         highScoreText.text = Mathf.FloorToInt(score).ToString();
     }
 
-    void StopIncreasingHighscore() => highscoreMultiplier = 0;
+    void SaveToJson()
+    {
+        if (score > highScore)
+        {
+            string json = File.ReadAllText(Application.dataPath + saveDataPath);
+            GameData data = JsonUtility.FromJson<GameData>(json);
+            
+            data.highScore = score;
+            json = JsonUtility.ToJson(data, true);
+            File.WriteAllText(Application.dataPath + saveDataPath, json);
+        }
+        
+    }
 
+    void LoadFromJson()
+    {
+        string json = File.ReadAllText(Application.dataPath + saveDataPath);
+
+        GameData data = JsonUtility.FromJson<GameData>(json);
+
+        highScore = data.highScore;
+    }
 
     void OnDisable()
     {
-        UIController.Instance.outOfFuel -= StopIncreasingHighscore;
-    }
-
-    void OnDestroy()
-    {
-        currentHighscore = PlayerPrefs.GetFloat(highScoreKey);
-        
-        if (currentHighscore < score)
-            PlayerPrefs.SetFloat(highScoreKey, score);
+        UnsubscribeOutOfFuel();
+        SaveToJson();
     }
 }

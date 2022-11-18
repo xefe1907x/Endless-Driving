@@ -42,7 +42,7 @@ public class CarMovement : MonoBehaviour
 
     void Start()
     {
-        UIController.Instance.outOfFuel += StopCar;
+        SubscribeOutOfFuel();
     }
 
     void Update()
@@ -52,6 +52,9 @@ public class CarMovement : MonoBehaviour
         IncreaseSpeedRegularly();
         GettingTouchInputs();
     }
+    
+    void SubscribeOutOfFuel() => UIController.Instance.outOfFuel += StopCar;
+    void UnsubscribeOutOfFuel() => UIController.Instance.outOfFuel -= StopCar;
 
     void MoveSides()
     {
@@ -129,6 +132,6 @@ public class CarMovement : MonoBehaviour
 
     void OnDisable()
     {
-        UIController.Instance.outOfFuel -= StopCar;
+        UnsubscribeOutOfFuel();
     }
 }
