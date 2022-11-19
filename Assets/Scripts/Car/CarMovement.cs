@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using TouchPhase = UnityEngine.TouchPhase;
 
@@ -42,7 +43,8 @@ public class CarMovement : MonoBehaviour
 
     void Start()
     {
-        SubscribeOutOfFuel();
+        SubscribeActions();
+        DOTween.Init();
     }
 
     void Update()
@@ -52,10 +54,54 @@ public class CarMovement : MonoBehaviour
         IncreaseSpeedRegularly();
         GettingTouchInputs();
     }
-    
-    void SubscribeOutOfFuel() => UIController.Instance.outOfFuel += StopCar;
-    void UnsubscribeOutOfFuel() => UIController.Instance.outOfFuel -= StopCar;
 
+    void SubscribeActions()
+    {
+        UIController.Instance.outOfFuel += StopCar;
+        CarController.Instance.hitSlower += CarHitSlower;
+        CarController.Instance.releasedSlower += CarReleaseFromSlower;
+        CarController.Instance.hitObstacle += CarHitObstacle;
+    }
+    
+    void UnsubscribeActions()
+    {
+        UIController.Instance.outOfFuel -= StopCar;
+        CarController.Instance.hitSlower -= CarHitSlower;
+        CarController.Instance.releasedSlower -= CarReleaseFromSlower;
+        CarController.Instance.hitObstacle -= CarHitObstacle;
+    }
+
+    void CarHitSlower()
+    {
+        carAcceleration *= -1f;
+        
+        maxSpeed *= 2;
+    }
+
+    void CarReleaseFromSlower()
+    {
+        carAcceleration *= -1f;
+        
+        maxSpeed /= 2;
+
+        if (carSpeed < 0)
+            carSpeed = 0;
+    }
+
+    void CarHitObstacle()
+    {
+        carAcceleration = 0;
+        carSpeed = 0;
+        sideSpeed = 0;
+        CarCrush();
+    }
+
+    void CarCrush()
+    {
+        var endValue = new Vector3(transform.position.x, transform.position.y, transform.position.z + 5f);
+        transform.DOJump(endValue, 2 , 1, 1);
+    }
+    
     void MoveSides()
     {
         if (Input.touchCount > 0)
@@ -96,8 +142,13 @@ public class CarMovement : MonoBehaviour
 
     void IncreaseSpeedRegularly()
     {
-        if (carSpeed <= maxSpeed)
+        if (carSpeed <= maxSpeed & carSpeed >= 0)
+        {
             carSpeed += carAcceleration * Time.deltaTime;
+        }
+        
+        else if (carSpeed < 0)
+            carSpeed = -0.001f;
     }
 
     void MoveForward()
@@ -109,13 +160,13 @@ public class CarMovement : MonoBehaviour
 
     void StopCar()
     {
-        StartCoroutine(nameof(CarSlowDown));
+        StartCoroutine(nameof(StopMoveForward));
         sideSpeed = 0;
         maxSpeed = -1;
         carAcceleration = 0;
     }
 
-    IEnumerator CarSlowDown()
+    IEnumerator StopMoveForward()
     {
         if (carSpeed > 0)
         {
@@ -123,7 +174,7 @@ public class CarMovement : MonoBehaviour
 
             yield return new WaitForSeconds(0.5f);
 
-            StartCoroutine(nameof(CarSlowDown));
+            StartCoroutine(nameof(StopMoveForward));
         }
         
         if (carSpeed < 0)
@@ -132,6 +183,6 @@ public class CarMovement : MonoBehaviour
 
     void OnDisable()
     {
-        UnsubscribeOutOfFuel();
+        UnsubscribeActions();
     }
 }

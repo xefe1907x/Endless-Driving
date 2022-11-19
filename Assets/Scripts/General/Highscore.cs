@@ -16,6 +16,7 @@ public class Highscore : MonoBehaviour
     void Start()
     {
         SubscribeOutOfFuel();
+        SubscribeHitObstacle();
         LoadFromJson();
     }
     void FixedUpdate()
@@ -25,6 +26,9 @@ public class Highscore : MonoBehaviour
     
     void SubscribeOutOfFuel() => UIController.Instance.outOfFuel += StopIncreasingHighscore;
     void UnsubscribeOutOfFuel() => UIController.Instance.outOfFuel -= StopIncreasingHighscore;
+
+    void SubscribeHitObstacle() => CarController.Instance.hitObstacle += StopIncreasingHighscore;
+    void UnsubscribeHitObstacle() => CarController.Instance.hitObstacle -= StopIncreasingHighscore;
     void StopIncreasingHighscore() => highscoreMultiplier = 0;
 
     void HighscoreController()
@@ -60,6 +64,7 @@ public class Highscore : MonoBehaviour
     void OnDisable()
     {
         UnsubscribeOutOfFuel();
+        UnsubscribeHitObstacle();
         SaveToJson();
     }
 }

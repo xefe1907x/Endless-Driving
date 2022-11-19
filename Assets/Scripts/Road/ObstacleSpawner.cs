@@ -80,8 +80,8 @@ public class ObstacleSpawner : MonoBehaviour
     {
         foreach (Transform slot in obstacleSlots)
         {
-            for (int i = 0; i < obstacles.Length; i++)
-                obstacles[i].SetActive(false);
+            for (int i = 0; i < slot.childCount; i++)
+                slot.GetChild(i).gameObject.SetActive(false);
         }
     }
 }
