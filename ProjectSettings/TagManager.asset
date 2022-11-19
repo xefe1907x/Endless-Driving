@@ -6,6 +6,8 @@ TagManager:
   tags:
   - ParentObstacle
   - EndDetector
+  - Slower
+  - Obstacle
   layers:
   - Default
   - TransparentFX

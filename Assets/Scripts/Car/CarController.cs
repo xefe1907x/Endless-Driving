@@ -3,6 +3,13 @@ using UnityEngine;
 
 public class CarController : MonoBehaviour
 {
+    public event Action hitEndDetector;
+    public event Action fullFuel;
+    public event Action coinCollected;
+    public event Action hitSlower;
+    public event Action releasedSlower;
+    public event Action hitObstacle;
+
     #region Singleton
 
     public static CarController Instance;
@@ -17,10 +24,6 @@ public class CarController : MonoBehaviour
 
     #endregion
 
-    public event Action hitEndDetector;
-    public event Action fullFuel;
-    
-    public event Action coinCollected;
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("EndDetector"))
@@ -31,6 +34,22 @@ public class CarController : MonoBehaviour
         
         if (other.GetComponent<Coin>())
             coinCollected?.Invoke();
-            
+        
+        if (other.CompareTag("Slower"))
+            hitSlower?.Invoke();
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Slower"))
+            releasedSlower?.Invoke();
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Obstacle"))
+        {
+            hitObstacle?.Invoke();
+        }
     }
 }
