@@ -1,12 +1,15 @@
 using System;
 using System.IO;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WalletController : MonoBehaviour
 {
     int coinAmount;
     
     string saveDataPath = "/Data/GameDataFile.json";
+
+    int gameLevel;
 
     #region Singleton
 
@@ -18,16 +21,21 @@ public class WalletController : MonoBehaviour
             Destroy(this);
 
         Instance = this;
+        
+        gameLevel  = SceneManager.GetActiveScene().buildIndex;
     }
 
     #endregion
 
     public event Action<int> changeCoinAmount;
 
+    
+
     void Start()
     {
         GetCoinFromJson();
-        SubscribeCoinCollected();
+        if (gameLevel > 0)
+            SubscribeCoinCollected();
     }
     
     void SubscribeCoinCollected() => CarController.Instance.coinCollected += CollectCoin;
@@ -64,7 +72,9 @@ public class WalletController : MonoBehaviour
 
     void OnDisable()
     {
-        UnsubscribeCoinCollected();
+        if (gameLevel > 0)
+            UnsubscribeCoinCollected();
+        
         SaveCoinsToJson();
     }
 }

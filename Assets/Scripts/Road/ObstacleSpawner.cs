@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -11,6 +10,8 @@ public class ObstacleSpawner : MonoBehaviour
     int slotNumber;
     int minNum;
     int maxNum;
+    
+    RandomNumberGenerator _randomNumberGenerator = new RandomNumberGenerator();
     
     float spawnDelay = 0.25f;
 
@@ -62,7 +63,7 @@ public class ObstacleSpawner : MonoBehaviour
         }
     }
 
-    void SetSlotNumber() => slotNumber = Random.Range(minNum, maxNum);
+    void SetSlotNumber() => slotNumber = _randomNumberGenerator.GenerateRandomNumber(minNum, maxNum);
 
     void CreateObstacles()
     {

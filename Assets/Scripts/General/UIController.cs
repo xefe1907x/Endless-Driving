@@ -17,6 +17,13 @@ public class UIController : MonoBehaviour
     [SerializeField] float rotateValueDivider = 5f;
     [SerializeField] float fuelDecreaseDivider = 10000f;
     [SerializeField] float speedBarMultiplier;
+    [Space(10)]
+
+    [Header("GameOver UI")]
+    [SerializeField] TextMeshProUGUI highscoreText;
+
+    [SerializeField] GameObject losePanel;
+    float activateDelay = 3.5f;
 
     #region Singleton
 
@@ -34,11 +41,15 @@ public class UIController : MonoBehaviour
 
     public event Action outOfFuel;
 
+    int gameLevel;
+
     void OnEnable()
     {
-        SubscribeActions();
+        if (gameLevel > 0)
+            SubscribeActions();
         DOTween.Init();
     }
+    
 
     void SubscribeActions()
     {
@@ -48,6 +59,18 @@ public class UIController : MonoBehaviour
         CarMovement.Instance.carSpeedAction += ManageSpeedBar;
         CarController.Instance.fullFuel += FullFuel;
         WalletController.Instance.changeCoinAmount += ChangeWalletAmount;
+        Highscore.endGameSendScore += SetHighscoreToUI;
+    }
+
+    void SetHighscoreToUI(float bestScore)
+    {
+        highscoreText.text = Mathf.FloorToInt(bestScore).ToString();
+        Invoke(nameof(ActivateLosePanel), activateDelay);
+    }
+
+    void ActivateLosePanel()
+    {
+        losePanel.SetActive(true);
     }
 
     void ChangeWalletAmount(int coinAmount)
@@ -93,12 +116,14 @@ public class UIController : MonoBehaviour
         CarMovement.Instance.carSpeedAction -= DecreaseFuel;
         CarMovement.Instance.carSpeedAction -= ManageSpeedBar;
         CarController.Instance.fullFuel -= FullFuel;
-        WalletController.Instance.changeCoinAmount += ChangeWalletAmount;
+        WalletController.Instance.changeCoinAmount -= ChangeWalletAmount;
+        Highscore.endGameSendScore -= SetHighscoreToUI;
     }
     
 
     void OnDisable()
     {
-        UnsubscribeActions();
+        if (gameLevel > 0)
+            UnsubscribeActions();
     }
 }

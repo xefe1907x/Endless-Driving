@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 
 public class RandomItemSpawner : MonoBehaviour
@@ -9,16 +7,16 @@ public class RandomItemSpawner : MonoBehaviour
     int randomSpawnNumber;
     int minNumber = 0;
     int maxNumber = 5;
+    
+    RandomNumberGenerator _randomNumberGenerator = new RandomNumberGenerator();
 
     void OnEnable()
     {
         SpawnRandomItem();
     }
 
-    void RandomSpawnNumber()
-    {
-        randomSpawnNumber = Random.Range(minNumber, maxNumber);
-    }
+    void RandomSpawnNumber() => randomSpawnNumber = _randomNumberGenerator.GenerateRandomNumber(minNumber, maxNumber);
+    
 
     void SpawnRandomItem()
     {

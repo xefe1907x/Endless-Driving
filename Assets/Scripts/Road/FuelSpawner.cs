@@ -2,6 +2,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+public class RandomNumberGenerator
+{
+    public int GenerateRandomNumber(int minNum, int maxNum)
+    {
+        int randomNumber = Random.Range(minNum, maxNum);
+
+        return randomNumber;
+    }
+}
+
 public class FuelSpawner : MonoBehaviour
 {
     [SerializeField] List<Transform> fuelSlots = new List<Transform>();
@@ -10,7 +20,9 @@ public class FuelSpawner : MonoBehaviour
     int slotNumber;
     int minNum;
     int maxNum;
-    
+
+    RandomNumberGenerator _randomNumberGenerator = new RandomNumberGenerator();
+
     float spawnDelay = 0.15f;
     
     void OnEnable()
@@ -42,7 +54,8 @@ public class FuelSpawner : MonoBehaviour
         }
     }
 
-    void SetSlotNumber() => slotNumber = Random.Range(minNum, maxNum);
+    void SetSlotNumber() => slotNumber = _randomNumberGenerator.GenerateRandomNumber(minNum, maxNum);
+    
 
     void CreateFuels()
     {
