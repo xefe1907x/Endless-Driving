@@ -3,6 +3,7 @@ using System.IO;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Image = UnityEngine.UI.Image;
 
 public class UIController : MonoBehaviour
@@ -56,16 +57,21 @@ public class UIController : MonoBehaviour
 
     void OnEnable()
     {
+        SetGameLevel();
         if (gameLevel > 0)
             SubscribeActions();
         DOTween.Init();
-        BuyButtonController();
+        if (gameLevel < 0)
+            BuyButtonController();
     }
 
     void Start()
     {
-        SubscribeOpenShopButton();
+        if (gameLevel < 0)
+            SubscribeOpenShopButton();
     }
+
+    void SetGameLevel() => gameLevel = SceneManager.GetActiveScene().buildIndex;
 
     void BuyButtonController()
     {
@@ -176,7 +182,8 @@ public class UIController : MonoBehaviour
 
     void OnDisable()
     {
-        UnsubscribeOpenShopButton();
+        if (gameLevel < 0)
+            UnsubscribeOpenShopButton();
         if (gameLevel > 0)
             UnsubscribeActions();
     }

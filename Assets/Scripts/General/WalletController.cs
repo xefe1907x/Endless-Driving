@@ -38,7 +38,9 @@ public class WalletController : MonoBehaviour
     {
         GetCoinFromJson();
         SubscribeBuyButtons();
-        SetWalletText();
+        
+        if (gameLevel < 0)
+            SetWalletText();
         
         if (gameLevel > 0)
             SubscribeCoinCollected();
