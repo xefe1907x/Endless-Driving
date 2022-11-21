@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -24,6 +25,16 @@ public class UIController : MonoBehaviour
 
     [SerializeField] GameObject losePanel;
     float activateDelay = 3.5f;
+    
+    [Space(10)]
+
+    [Header("Store")]
+    [SerializeField] GameObject boughtAfterBuyButton1;
+    [SerializeField] GameObject boughtAfterBuyButton2;
+    [SerializeField] GameObject boughtAfterBuyButton3;
+    
+    string saveDataPath = "/Data/GameDataFile.json";
+    
 
     #region Singleton
 
@@ -48,7 +59,49 @@ public class UIController : MonoBehaviour
         if (gameLevel > 0)
             SubscribeActions();
         DOTween.Init();
+        BuyButtonController();
     }
+
+    void Start()
+    {
+        SubscribeOpenShopButton();
+    }
+
+    void BuyButtonController()
+    {
+        string json = File.ReadAllText(Application.dataPath + saveDataPath);
+        GameData data = JsonUtility.FromJson<GameData>(json);
+
+        var buyButton2 = data.button2Buy;
+        var buyButton3 = data.button3Buy;
+        var buyButton4 = data.button4Buy;
+        
+        if (buyButton2)
+            boughtAfterBuyButton1.SetActive(true);
+        if (buyButton3)
+            boughtAfterBuyButton2.SetActive(true);
+        if (buyButton4)
+            boughtAfterBuyButton3.SetActive(true);
+    }
+
+    void ShopButtonOpener(int buttonNo)
+    {
+        switch (buttonNo)
+        {
+            case 2:
+                boughtAfterBuyButton1.SetActive(true);
+                break;
+            case 3:
+                boughtAfterBuyButton2.SetActive(true);
+                break;
+            case 4:
+                boughtAfterBuyButton3.SetActive(true);
+                break;
+        }
+    }
+
+    void SubscribeOpenShopButton() => ButtonSessions.Instance.openShopButton += ShopButtonOpener;
+    void UnsubscribeOpenShopButton() => ButtonSessions.Instance.openShopButton -= ShopButtonOpener;
     
 
     void SubscribeActions()
@@ -123,6 +176,7 @@ public class UIController : MonoBehaviour
 
     void OnDisable()
     {
+        UnsubscribeOpenShopButton();
         if (gameLevel > 0)
             UnsubscribeActions();
     }
