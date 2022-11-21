@@ -61,13 +61,13 @@ public class UIController : MonoBehaviour
         if (gameLevel > 0)
             SubscribeActions();
         DOTween.Init();
-        if (gameLevel < 0)
+        if (gameLevel < 1)
             BuyButtonController();
     }
 
     void Start()
     {
-        if (gameLevel < 0)
+        if (gameLevel < 1)
             SubscribeOpenShopButton();
     }
 
@@ -182,7 +182,7 @@ public class UIController : MonoBehaviour
 
     void OnDisable()
     {
-        if (gameLevel < 0)
+        if (gameLevel < 1)
             UnsubscribeOpenShopButton();
         if (gameLevel > 0)
             UnsubscribeActions();

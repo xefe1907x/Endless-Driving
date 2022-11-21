@@ -42,18 +42,19 @@ public class ButtonSessions : MonoBehaviour
     void SubscribeWalletForBuyButton() => WalletController.Instance.buttonBought += ButtonBought;
     void UnsubscribeWalletForBuyButton() => WalletController.Instance.buttonBought -= ButtonBought;
     
-    void SubscribeEnergyController() => EnergyController.enoughEnergy += LoadNextScene;
-    void UnsubscribeEnergyController() => EnergyController.enoughEnergy -= LoadNextScene;
+    void SubscribeEnergyController() => EnergyController.enoughEnergy += GoNextScene;
+    void UnsubscribeEnergyController() => EnergyController.enoughEnergy -= GoNextScene;
 
     public void PlayButton()
     {
         pushedPlayButton?.Invoke();
     }
 
-    void LoadNextScene()
-    {
-        SceneManager.LoadScene(1);
-    }
+    void GoNextScene() => Invoke(nameof(LoadNextScene), 1.54f);
+
+    public void LoadNextScene() => SceneManager.LoadScene(1);
+    
+    public void LoadMainMenu() => SceneManager.LoadScene(0);
 
     public void SetVolume(float volume)
     {
