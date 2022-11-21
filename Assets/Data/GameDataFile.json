@@ -1,4 +1,8 @@
 {
-    "highScore": 381.61407470703127,
-    "coin": 60
+    "highScore": 154.7002410888672,
+    "coin": 151,
+    "button2Buy": true,
+    "button3Buy": false,
+    "button4Buy": true,
+    "whichCarInUse": 0
 }

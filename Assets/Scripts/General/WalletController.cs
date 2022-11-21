@@ -1,12 +1,16 @@
 using System;
 using System.IO;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class WalletController : MonoBehaviour
 {
     int coinAmount;
     
     string saveDataPath = "/Data/GameDataFile.json";
+
+    int gameLevel;
 
     #region Singleton
 
@@ -18,20 +22,55 @@ public class WalletController : MonoBehaviour
             Destroy(this);
 
         Instance = this;
+        
+        gameLevel  = SceneManager.GetActiveScene().buildIndex;
     }
 
     #endregion
 
     public event Action<int> changeCoinAmount;
+    public event Action<int> buttonBought;
+
+    [SerializeField] TextMeshProUGUI walletText;
+    
 
     void Start()
     {
         GetCoinFromJson();
-        SubscribeCoinCollected();
+        SubscribeBuyButtons();
+        SetWalletText();
+        
+        if (gameLevel > 0)
+            SubscribeCoinCollected();
+    }
+
+    void SetWalletText()
+    {
+        walletText.text = coinAmount.ToString();
+    }
+
+    void BuyButtonIsPressed(int price, int buttonNo)
+    {
+        if (coinAmount >= price)
+        {
+            buttonBought?.Invoke(buttonNo);
+
+            coinAmount -= price;
+            
+            string json = File.ReadAllText(Application.dataPath + saveDataPath);
+            GameData data = JsonUtility.FromJson<GameData>(json);
+
+            data.coin = coinAmount;
+            json = JsonUtility.ToJson(data, true);
+            File.WriteAllText(Application.dataPath + saveDataPath, json);
+
+            SetWalletText();
+        }
     }
     
+    void SubscribeBuyButtons() => ButtonSessions.Instance.buyAnyButton += BuyButtonIsPressed;
+    void UnsubscribeBuyButtons() => ButtonSessions.Instance.buyAnyButton -= BuyButtonIsPressed;
     void SubscribeCoinCollected() => CarController.Instance.coinCollected += CollectCoin;
-    
     void UnsubscribeCoinCollected() => CarController.Instance.coinCollected -= CollectCoin;
 
     void GetCoinFromJson()
@@ -64,7 +103,11 @@ public class WalletController : MonoBehaviour
 
     void OnDisable()
     {
-        UnsubscribeCoinCollected();
+        UnsubscribeBuyButtons();
+        
+        if (gameLevel > 0)
+            UnsubscribeCoinCollected();
+        
         SaveCoinsToJson();
     }
 }

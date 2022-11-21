@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -17,6 +18,23 @@ public class UIController : MonoBehaviour
     [SerializeField] float rotateValueDivider = 5f;
     [SerializeField] float fuelDecreaseDivider = 10000f;
     [SerializeField] float speedBarMultiplier;
+    [Space(10)]
+
+    [Header("GameOver UI")]
+    [SerializeField] TextMeshProUGUI highscoreText;
+
+    [SerializeField] GameObject losePanel;
+    float activateDelay = 3.5f;
+    
+    [Space(10)]
+
+    [Header("Store")]
+    [SerializeField] GameObject boughtAfterBuyButton1;
+    [SerializeField] GameObject boughtAfterBuyButton2;
+    [SerializeField] GameObject boughtAfterBuyButton3;
+    
+    string saveDataPath = "/Data/GameDataFile.json";
+    
 
     #region Singleton
 
@@ -34,11 +52,57 @@ public class UIController : MonoBehaviour
 
     public event Action outOfFuel;
 
+    int gameLevel;
+
     void OnEnable()
     {
-        SubscribeActions();
+        if (gameLevel > 0)
+            SubscribeActions();
         DOTween.Init();
+        BuyButtonController();
     }
+
+    void Start()
+    {
+        SubscribeOpenShopButton();
+    }
+
+    void BuyButtonController()
+    {
+        string json = File.ReadAllText(Application.dataPath + saveDataPath);
+        GameData data = JsonUtility.FromJson<GameData>(json);
+
+        var buyButton2 = data.button2Buy;
+        var buyButton3 = data.button3Buy;
+        var buyButton4 = data.button4Buy;
+        
+        if (buyButton2)
+            boughtAfterBuyButton1.SetActive(true);
+        if (buyButton3)
+            boughtAfterBuyButton2.SetActive(true);
+        if (buyButton4)
+            boughtAfterBuyButton3.SetActive(true);
+    }
+
+    void ShopButtonOpener(int buttonNo)
+    {
+        switch (buttonNo)
+        {
+            case 2:
+                boughtAfterBuyButton1.SetActive(true);
+                break;
+            case 3:
+                boughtAfterBuyButton2.SetActive(true);
+                break;
+            case 4:
+                boughtAfterBuyButton3.SetActive(true);
+                break;
+        }
+    }
+
+    void SubscribeOpenShopButton() => ButtonSessions.Instance.openShopButton += ShopButtonOpener;
+    void UnsubscribeOpenShopButton() => ButtonSessions.Instance.openShopButton -= ShopButtonOpener;
+    
 
     void SubscribeActions()
     {
@@ -48,6 +112,18 @@ public class UIController : MonoBehaviour
         CarMovement.Instance.carSpeedAction += ManageSpeedBar;
         CarController.Instance.fullFuel += FullFuel;
         WalletController.Instance.changeCoinAmount += ChangeWalletAmount;
+        Highscore.endGameSendScore += SetHighscoreToUI;
+    }
+
+    void SetHighscoreToUI(float bestScore)
+    {
+        highscoreText.text = Mathf.FloorToInt(bestScore).ToString();
+        Invoke(nameof(ActivateLosePanel), activateDelay);
+    }
+
+    void ActivateLosePanel()
+    {
+        losePanel.SetActive(true);
     }
 
     void ChangeWalletAmount(int coinAmount)
@@ -93,12 +169,15 @@ public class UIController : MonoBehaviour
         CarMovement.Instance.carSpeedAction -= DecreaseFuel;
         CarMovement.Instance.carSpeedAction -= ManageSpeedBar;
         CarController.Instance.fullFuel -= FullFuel;
-        WalletController.Instance.changeCoinAmount += ChangeWalletAmount;
+        WalletController.Instance.changeCoinAmount -= ChangeWalletAmount;
+        Highscore.endGameSendScore -= SetHighscoreToUI;
     }
     
 
     void OnDisable()
     {
-        UnsubscribeActions();
+        UnsubscribeOpenShopButton();
+        if (gameLevel > 0)
+            UnsubscribeActions();
     }
 }

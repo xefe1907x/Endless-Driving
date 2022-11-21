@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using TMPro;
 using UnityEngine;
@@ -6,12 +7,14 @@ public class Highscore : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI highScoreText;
 
-    float highScore;
-    float score;
+    public float highScore;
+    public float score;
 
     int highscoreMultiplier = 5;
 
     string saveDataPath = "/Data/GameDataFile.json";
+
+    public static Action<float> endGameSendScore;
 
     void Start()
     {
@@ -29,7 +32,16 @@ public class Highscore : MonoBehaviour
 
     void SubscribeHitObstacle() => CarController.Instance.hitObstacle += StopIncreasingHighscore;
     void UnsubscribeHitObstacle() => CarController.Instance.hitObstacle -= StopIncreasingHighscore;
-    void StopIncreasingHighscore() => highscoreMultiplier = 0;
+
+    void StopIncreasingHighscore()
+    {
+        highscoreMultiplier = 0;
+        
+        if (score > highScore)
+            endGameSendScore?.Invoke(score);
+        else
+            endGameSendScore?.Invoke(highScore);
+    }
 
     void HighscoreController()
     {
@@ -49,7 +61,6 @@ public class Highscore : MonoBehaviour
             json = JsonUtility.ToJson(data, true);
             File.WriteAllText(Application.dataPath + saveDataPath, json);
         }
-        
     }
 
     void LoadFromJson()
